@@ -87,4 +87,14 @@ static int upo_bst_is_leaf_impl(const upo_bst_node_t *node);
 
 static void upo_bst_traverse_in_order_impl(const upo_bst_node_t *node, upo_bst_visitor_t visit, void *visit_context);
 
+void upo_bst_floor_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_node_t *res_node);
+
+void upo_bst_ceiling_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_node_t *res_node);
+
+void upo_bst_keys_range_impl(const upo_bst_node_t *node, const void *low_key, const void *high_key, upo_bst_comparator_t cmp, upo_bst_key_list_t key_list);
+
+void upo_bst_keys_impl(upo_bst_node_t *node, upo_bst_key_list_t key_list);
+
+int upo_bst_is_bst_impl(upo_bst_node_t *node, const void *min_key, const void *max_key, upo_bst_comparator_t cmp);
+
 #endif /* UPO_BST_PRIVATE_H */
