@@ -373,22 +373,24 @@ void *upo_bst_floor(const upo_bst_t tree, const void *key)
     if (tree == NULL || tree->root == NULL)
         return NULL;
 
-    upo_bst_node_t *res_node = NULL;
-    upo_bst_floor_impl(tree->root, key, upo_bst_get_comparator(tree), res_node);
-    return res_node;
+    upo_bst_node_t *res_node = upo_bst_floor_impl(tree->root, key, upo_bst_get_comparator(tree));
+    return res_node != NULL ? res_node->key : NULL;
 }
 
-void upo_bst_floor_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_node_t *res_node)
+void *upo_bst_floor_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp)
 {
     if (node == NULL)
-        return;
+        return NULL;
 
-    upo_bst_floor_impl(node->left, key, cmp, res_node);
-
-    if (res_node == NULL || (cmp(node->key, key) <= 0 && cmp(node->key, res_node) >= 0))
-        res_node = node;
-
-    upo_bst_floor_impl(node->right, key, cmp, res_node);
+    if (cmp(key, node->key) < 0)
+        return upo_bst_floor_impl(node->left, key, cmp);
+    else if (cmp(key, node->key) > 0)
+    {
+        upo_bst_node_t *res_node = upo_bst_floor_impl(node->right, key, cmp);
+        return res_node != NULL ? res_node : node;
+    }
+    else
+        return node;
 }
 
 void *upo_bst_ceiling(const upo_bst_t tree, const void *key)
@@ -396,22 +398,24 @@ void *upo_bst_ceiling(const upo_bst_t tree, const void *key)
     if (tree == NULL || tree->root == NULL)
         return NULL;
 
-    upo_bst_node_t *res_node = NULL;
-    upo_bst_ceiling_impl(tree->root, key, upo_bst_get_comparator(tree), res_node);
-    return res_node;
+    upo_bst_node_t *res_node = upo_bst_ceiling_impl(tree->root, key, upo_bst_get_comparator(tree));
+    return res_node != NULL ? res_node->key : NULL;
 }
 
-void upo_bst_ceiling_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_node_t *res_node)
+void *upo_bst_ceiling_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp)
 {
     if (node == NULL)
-        return;
+        return NULL;
 
-    upo_bst_ceiling_impl(node->left, key, cmp, res_node);
-
-    if (res_node == NULL || (cmp(node->key, key) >= 0 && cmp(node->key, res_node) <= 0))
-        res_node = node;
-
-    upo_bst_ceiling_impl(node->right, key, cmp, res_node);
+    if (cmp(key, node->key) > 0)
+        return upo_bst_ceiling_impl(node->right, key, cmp);
+    else if (cmp(key, node->key) < 0)
+    {
+        upo_bst_node_t *res_node = upo_bst_ceiling_impl(node->left, key, cmp);
+        return res_node != NULL ? res_node : node;
+    }
+    else
+        return node;
 }
 
 upo_bst_key_list_t upo_bst_keys_range(const upo_bst_t tree, const void *low_key, const void *high_key)
@@ -420,11 +424,11 @@ upo_bst_key_list_t upo_bst_keys_range(const upo_bst_t tree, const void *low_key,
         return NULL;
 
     upo_bst_key_list_t key_list = NULL;
-    upo_bst_keys_range_impl(tree->root, low_key, high_key, upo_bst_get_comparator(tree), key_list);
+    upo_bst_keys_range_impl(tree->root, low_key, high_key, upo_bst_get_comparator(tree), &key_list);
     return key_list;
 }
 
-void upo_bst_keys_range_impl(const upo_bst_node_t *node, const void *low_key, const void *high_key, upo_bst_comparator_t cmp, upo_bst_key_list_t key_list)
+void upo_bst_keys_range_impl(const upo_bst_node_t *node, const void *low_key, const void *high_key, upo_bst_comparator_t cmp, upo_bst_key_list_t *key_list)
 {
     if (node == NULL)
         return;
@@ -435,8 +439,8 @@ void upo_bst_keys_range_impl(const upo_bst_node_t *node, const void *low_key, co
     {
         upo_bst_key_list_t key_node = malloc(sizeof(upo_bst_key_list_t));
         key_node->key = node->key;
-        key_node->next = key_list;
-        key_list = key_node;
+        key_node->next = *key_list;
+        *key_list = key_node;
     }
 
     upo_bst_keys_range_impl(node->right, low_key, high_key, cmp, key_list);
@@ -448,11 +452,11 @@ upo_bst_key_list_t upo_bst_keys(const upo_bst_t tree)
         return NULL;
 
     upo_bst_key_list_t key_list = NULL;
-    upo_bst_keys_impl(tree->root, key_list);
+    upo_bst_keys_impl(tree->root, &key_list);
     return key_list;
 }
 
-void upo_bst_keys_impl(upo_bst_node_t *node, upo_bst_key_list_t key_list)
+void upo_bst_keys_impl(upo_bst_node_t *node, upo_bst_key_list_t *key_list)
 {
     if (node == NULL)
         return;
@@ -461,15 +465,15 @@ void upo_bst_keys_impl(upo_bst_node_t *node, upo_bst_key_list_t key_list)
 
     upo_bst_key_list_t key_node = malloc(sizeof(upo_bst_key_list_t));
     key_node->key = node->key;
-    key_node->next = key_list;
-    key_list = key_node;
+    key_node->next = *key_list;
+    *key_list = key_node;
 
     upo_bst_keys_impl(node->right, key_list);
 }
 
 int upo_bst_is_bst(const upo_bst_t tree, const void *min_key, const void *max_key)
 {
-    if (tree == NULL || tree->root == NULL)
+    if (tree == NULL)
         return 0;
 
     return upo_bst_is_bst_impl(tree->root, min_key, max_key, upo_bst_get_comparator(tree));
