@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "sort.h": "c"
+        "sort.h": "c",
+        "advanced_pointers.h": "c",
+        "stdio.h": "c"
     }
 }
