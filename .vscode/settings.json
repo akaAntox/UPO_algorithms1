@@ -2,6 +2,7 @@
     "files.associations": {
         "sort.h": "c",
         "advanced_pointers.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "upo_queue_t.h": "c"
     }
 }
