@@ -106,7 +106,7 @@ void *upo_bst_put(upo_bst_t tree, void *key, void *value)
         return NULL;
 
     void *old_val = NULL;
-    tree->root = upo_bst_put_impl(tree->root, key, value, old_val, upo_bst_get_comparator(tree));
+    tree->root = upo_bst_put_impl(tree->root, key, value, old_val, tree->key_cmp);
 
     return old_val;
 }
@@ -131,7 +131,7 @@ void *upo_bst_put_impl(upo_bst_node_t *node, void *key, void *value, void *old_v
 void upo_bst_insert(upo_bst_t tree, void *key, void *value)
 {
     if (tree != NULL)
-        tree->root = upo_bst_insert_impl(tree->root, key, value, upo_bst_get_comparator(tree));
+        tree->root = upo_bst_insert_impl(tree->root, key, value, tree->key_cmp);
 }
 
 void *upo_bst_insert_impl(upo_bst_node_t *node, void *key, void *value, upo_bst_comparator_t cmp)
@@ -151,7 +151,7 @@ void *upo_bst_get(const upo_bst_t tree, const void *key)
     if (tree == NULL)
         return NULL;
 
-    upo_bst_node_t *node = upo_bst_get_impl(tree->root, key, upo_bst_get_comparator(tree));
+    upo_bst_node_t *node = upo_bst_get_impl(tree->root, key, tree->key_cmp);
 
     if (node != NULL)
         return node->value;
@@ -174,7 +174,7 @@ void *upo_bst_get_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator
 int upo_bst_contains(const upo_bst_t tree, const void *key)
 {
     if (tree != NULL)
-        if (upo_bst_get_impl(tree->root, key, upo_bst_get_comparator(tree)) != NULL)
+        if (upo_bst_get_impl(tree->root, key, tree->key_cmp) != NULL)
             return 1;
     return 0;
 }
@@ -182,7 +182,7 @@ int upo_bst_contains(const upo_bst_t tree, const void *key)
 void upo_bst_delete(upo_bst_t tree, const void *key, int destroy_data)
 {
     if (tree != NULL)
-        tree->root = upo_bst_delete_impl(tree->root, key, destroy_data, upo_bst_get_comparator(tree));
+        tree->root = upo_bst_delete_impl(tree->root, key, destroy_data, tree->key_cmp);
 }
 
 void *upo_bst_delete_impl(upo_bst_node_t *node, const void *key, int destroy_data, upo_bst_comparator_t cmp)
@@ -373,7 +373,7 @@ void *upo_bst_floor(const upo_bst_t tree, const void *key)
     if (tree == NULL || tree->root == NULL)
         return NULL;
 
-    upo_bst_node_t *res_node = upo_bst_floor_impl(tree->root, key, upo_bst_get_comparator(tree));
+    upo_bst_node_t *res_node = upo_bst_floor_impl(tree->root, key, tree->key_cmp);
     return res_node != NULL ? res_node->key : NULL;
 }
 
@@ -398,7 +398,7 @@ void *upo_bst_ceiling(const upo_bst_t tree, const void *key)
     if (tree == NULL || tree->root == NULL)
         return NULL;
 
-    upo_bst_node_t *res_node = upo_bst_ceiling_impl(tree->root, key, upo_bst_get_comparator(tree));
+    upo_bst_node_t *res_node = upo_bst_ceiling_impl(tree->root, key, tree->key_cmp);
     return res_node != NULL ? res_node->key : NULL;
 }
 
@@ -424,7 +424,7 @@ upo_bst_key_list_t upo_bst_keys_range(const upo_bst_t tree, const void *low_key,
         return NULL;
 
     upo_bst_key_list_t key_list = NULL;
-    upo_bst_keys_range_impl(tree->root, low_key, high_key, upo_bst_get_comparator(tree), &key_list);
+    upo_bst_keys_range_impl(tree->root, low_key, high_key, tree->key_cmp, &key_list);
     return key_list;
 }
 
@@ -476,7 +476,7 @@ int upo_bst_is_bst(const upo_bst_t tree, const void *min_key, const void *max_ke
     if (tree == NULL)
         return 0;
 
-    return upo_bst_is_bst_impl(tree->root, min_key, max_key, upo_bst_get_comparator(tree));
+    return upo_bst_is_bst_impl(tree->root, min_key, max_key, tree->key_cmp);
 }
 
 int upo_bst_is_bst_impl(upo_bst_node_t *node, const void *min_key, const void *max_key, upo_bst_comparator_t cmp)
@@ -496,7 +496,107 @@ int upo_bst_is_bst_impl(upo_bst_node_t *node, const void *min_key, const void *m
 }
 
 /**** EXERCISE #2 - END of EXTRA OPERATIONS ****/
+/**** EXERCISE #8-9-10-11 - MORE EXERCISES ****/
 
+size_t upo_bst_rank(const upo_bst_t tree, const void *key)
+{
+    if (tree == NULL)
+        return 0;
+
+    return upo_bst_rank_impl(tree->root, key, tree->key_cmp);
+}
+
+size_t upo_bst_rank_impl(const upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp)
+{
+    if (node == NULL)
+        return 0;
+
+    size_t rank = 0;
+
+    if (cmp(node->key, key) < 0)
+        rank += 1 + upo_bst_rank_impl(node->right, key, cmp);
+    rank += upo_bst_rank_impl(node->left, key, cmp);
+
+    return rank;
+}
+
+void *upo_bst_predecessor(const upo_bst_t tree, const void *key)
+{
+    if (tree == NULL)
+        return NULL;
+
+    upo_bst_node_t *node = upo_bst_get_impl(tree->root, key, tree->key_cmp);
+    if (node != NULL)
+    {
+        node = upo_bst_max_impl(node->left);
+        return node->key;
+    }
+
+    return NULL;
+}
+
+void *upo_bst_get_value_depth(const upo_bst_t tree, const void *key, long *depth)
+{
+    if (tree == NULL)
+        return NULL;
+
+    *depth = 0;
+    upo_bst_node_t *node = upo_bst_get_value_depth_impl(tree->root, key, depth, tree->key_cmp);
+    if (node != NULL)
+        return node->key;
+
+    *depth = -1;
+    return NULL;
+}
+
+void *upo_bst_get_value_depth_impl(upo_bst_node_t *node, const void *key, long *depth, upo_bst_comparator_t cmp)
+{
+    if (node == NULL)
+        return NULL;
+
+    if (cmp(key, node->key) < 0)
+    {
+        (*depth)++;
+        return upo_bst_get_value_depth_impl(node->left, key, depth, cmp);
+    }
+    else if (cmp(key, node->key) > 0)
+    {
+        (*depth)++;
+        return upo_bst_get_value_depth_impl(node->right, key, depth, cmp);
+    }
+    else
+        return node;
+}
+
+upo_bst_key_list_t upo_bst_keys_le(const upo_bst_t tree, const void *key)
+{
+    if (tree == NULL)
+        return NULL;
+
+    upo_bst_key_list_t key_list = NULL;
+    upo_bst_keys_le_impl(tree->root, key, tree->key_cmp, &key_list);
+    return key_list;
+}
+
+void upo_bst_keys_le_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_key_list_t *key_list)
+{
+    if (node == NULL)
+        return;
+
+    upo_bst_keys_le_impl(node->left, key, cmp, key_list);
+    if (cmp(node->key, key) <= 0)
+        upo_bst_keys_le_impl(node->right, key, cmp, key_list);
+
+    if (cmp(node->key, key) <= 0)
+    {
+        upo_bst_key_list_t key_node = malloc(sizeof(upo_bst_key_list_t));
+        key_node->key = node->key;
+        key_node->next = *key_list;
+        *key_list = key_node;
+    }
+}
+
+/**** EXERCISE #8-9-10-11 - END of MORE EXERCISES ****/
 upo_bst_comparator_t upo_bst_get_comparator(const upo_bst_t tree)
 {
     if (tree == NULL)

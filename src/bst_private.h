@@ -97,4 +97,10 @@ void upo_bst_keys_impl(upo_bst_node_t *node, upo_bst_key_list_t *key_list);
 
 int upo_bst_is_bst_impl(upo_bst_node_t *node, const void *min_key, const void *max_key, upo_bst_comparator_t cmp);
 
+size_t upo_bst_rank_impl(const upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp);
+
+void *upo_bst_get_value_depth_impl(upo_bst_node_t *node, const void *key, long *depth, upo_bst_comparator_t cmp);
+
+void upo_bst_keys_le_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_key_list_t *key_list);
+
 #endif /* UPO_BST_PRIVATE_H */
