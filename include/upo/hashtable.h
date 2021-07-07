@@ -277,7 +277,7 @@ upo_ht_key_list_t upo_ht_sepchain_keys(const upo_ht_sepchain_t ht);
 /**
  * \brief Performs a traversal of the hash table.
  *
- * \param tree The hash table to traverse.
+ * \param ht The hash table to traverse.
  * \param visit The visit function.
  * \param visit_context Additional information, passed to the visit function as
  *  third parameter.
@@ -485,7 +485,7 @@ upo_ht_key_list_t upo_ht_linprob_keys(const upo_ht_linprob_t ht);
 /**
  * \brief Performs a traversal of the hash table.
  *
- * \param tree The hash table to traverse.
+ * \param ht The hash table to traverse.
  * \param visit The visit function.
  * \param visit_context Additional information, passed to the visit function as
  *  third parameter.
