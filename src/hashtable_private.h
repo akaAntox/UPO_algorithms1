@@ -28,18 +28,15 @@
 #ifndef UPO_HASHTABLE_PRIVATE_H
 #define UPO_HASHTABLE_PRIVATE_H
 
-
 #include <upo/hashtable.h>
 
-
 /*** BEGIN of HASH TABLE with SEPARATE CHAINING ***/
-
 
 /** \brief Type for nodes of the list of collisions. */
 struct upo_ht_sepchain_list_node_s
 {
-    void *key; /**< Pointer to the user-provided key. */
-    void *value; /**< Pointer to the value associated to the key. */
+    void *key;                                /**< Pointer to the user-provided key. */
+    void *value;                              /**< Pointer to the value associated to the key. */
     struct upo_ht_sepchain_list_node_s *next; /**< Pointer to the next node in the list. */
 };
 /** \brief Alias for the type for nodes of the list of collisions. */
@@ -57,24 +54,21 @@ typedef struct upo_ht_sepchain_slot_s upo_ht_sepchain_slot_t;
 struct upo_ht_sepchain_s
 {
     upo_ht_sepchain_slot_t *slots; /**< The hash table as array of slots. */
-    size_t capacity; /**< The capacity of the hash table. */
-    size_t size; /**< The number of elements stored in the hash table. */
-    upo_ht_hasher_t key_hash; /**< The key hash function. */
-    upo_ht_comparator_t key_cmp; /**< The key comparison function. */
+    size_t capacity;               /**< The capacity of the hash table. */
+    size_t size;                   /**< The number of elements stored in the hash table. */
+    upo_ht_hasher_t key_hash;      /**< The key hash function. */
+    upo_ht_comparator_t key_cmp;   /**< The key comparison function. */
 };
-
 
 /*** END of HASH TABLE with SEPARATE CHAINING ***/
 
-
 /*** BEGIN of HASH TABLE with LINEAR PROBING ***/
-
 
 /** \brief Type for slots of hash tables with linear probing. */
 struct upo_ht_linprob_slot_s
 {
-    void *key; /**< Pointer to the user-provided key. */
-    void *value; /**< Pointer to the value associated to the key. */
+    void *key;     /**< Pointer to the user-provided key. */
+    void *value;   /**< Pointer to the value associated to the key. */
     int tombstone; /**< Flag used to mark this slot as deleted. */
 };
 
@@ -85,12 +79,11 @@ typedef struct upo_ht_linprob_slot_s upo_ht_linprob_slot_t;
 struct upo_ht_linprob_s
 {
     upo_ht_linprob_slot_t *slots; /**< The hash table as array of slots. */
-    size_t capacity; /**< The capacity of the hash table. */
-    size_t size; /**< The number of stored key-value pairs. */
-    upo_ht_hasher_t key_hash; /**< The key hash function. */
-    upo_ht_comparator_t key_cmp; /**< The key comparison function. */
+    size_t capacity;              /**< The capacity of the hash table. */
+    size_t size;                  /**< The number of stored key-value pairs. */
+    upo_ht_hasher_t key_hash;     /**< The key hash function. */
+    upo_ht_comparator_t key_cmp;  /**< The key comparison function. */
 };
-
 
 /**
  * \brief Resize the given hash table to the given capacity.
@@ -100,8 +93,6 @@ struct upo_ht_linprob_s
  */
 static void upo_ht_linprob_resize(upo_ht_linprob_t ht, size_t n);
 
-
 /*** END of HASH TABLE with LINEAR PROBING ***/
-
 
 #endif /* UPO_HASHTABLE_PRIVATE_H */

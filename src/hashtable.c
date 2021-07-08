@@ -121,7 +121,7 @@ void upo_ht_sepchain_clear(upo_ht_sepchain_t ht, int destroy_data)
 void *upo_ht_sepchain_put(upo_ht_sepchain_t ht, void *key, void *value)
 {
     if (ht == NULL || ht->slots == NULL)
-        return;
+        return NULL;
 
     void *old_value = NULL;
 
@@ -164,7 +164,7 @@ void upo_ht_sepchain_insert(upo_ht_sepchain_t ht, void *key, void *value)
         n->key = key;
         n->value = value;
         n->next = ht->slots[h].head;
-        ht->slots[h].head;
+        ht->slots[h].head = n;
         ht->size++;
     }
 }
@@ -213,11 +213,14 @@ void upo_ht_sepchain_delete(upo_ht_sepchain_t ht, const void *key, int destroy_d
         p = n;
         n = n->next;
     }
+
     if (n != NULL)
+    {
         if (p == NULL)
             ht->slots[h].head = n->next;
         else
             p->next = n->next;
+    }
 
     ht->size--;
     if (destroy_data)
@@ -231,7 +234,7 @@ void upo_ht_sepchain_delete(upo_ht_sepchain_t ht, const void *key, int destroy_d
 size_t upo_ht_sepchain_size(const upo_ht_sepchain_t ht)
 {
     if (ht == NULL || ht->slots == NULL)
-        return;
+        return 0;
 
     return ht->size;
 }
@@ -352,7 +355,7 @@ void upo_ht_linprob_clear(upo_ht_linprob_t ht, int destroy_data)
 void *upo_ht_linprob_put(upo_ht_linprob_t ht, void *key, void *value)
 {
     if (ht == NULL || ht->slots == NULL)
-        return;
+        return NULL;
 
     void *old_value = NULL;
 
@@ -474,6 +477,8 @@ void upo_ht_linprob_delete(upo_ht_linprob_t ht, const void *key, int destroy_dat
         ht->size--;
         if (upo_ht_linprob_load_factor(ht) <= 0.125)
             upo_ht_linprob_resize(ht, ht->capacity / 2);
+        if (destroy_data)
+            free(ht->slots + h);
     }
 }
 
