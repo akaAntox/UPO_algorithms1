@@ -50,26 +50,14 @@ void upo_bst_destroy(upo_bst_t tree, int destroy_data)
     }
 }
 
-void upo_bst_clear_impl(upo_bst_node_t *node, int destroy_data)
-{
-    if (node != NULL)
-    {
-        upo_bst_clear_impl(node->left, destroy_data);
-        upo_bst_clear_impl(node->right, destroy_data);
-
-        if (destroy_data)
-        {
-            free(node->key);
-            free(node->value);
-        }
-
-        free(node);
-    }
-}
-
 void *upo_bst_node_create(void *key, void *value)
 {
     upo_bst_node_t *node = malloc(sizeof(upo_bst_node_t));
+    if (node == NULL)
+    {
+        perror("Unable to create binary search tree node");
+        abort();
+    }
     node->key = key;
     node->value = value;
     node->left = NULL;
@@ -97,6 +85,16 @@ void upo_bst_clear(upo_bst_t tree, int destroy_data)
     {
         upo_bst_clear_impl(tree->root, destroy_data);
         tree->root = NULL;
+    }
+}
+
+void upo_bst_clear_impl(upo_bst_node_t *node, int destroy_data)
+{
+    if (node != NULL)
+    {
+        upo_bst_clear_impl(node->left, destroy_data);
+        upo_bst_clear_impl(node->right, destroy_data);
+        upo_bst_destroy_node(node, destroy_data);
     }
 }
 
@@ -329,21 +327,9 @@ void upo_bst_delete_min(upo_bst_t tree, int destroy_data)
     if (tree == NULL || tree->root == NULL)
         return;
 
-    upo_bst_node_t *node = tree->root, *prevNode = NULL;
-    while (node->left != NULL)
-    {
-        prevNode = node;
-        node = node->left;
-    }
-    if (prevNode != NULL)
-        prevNode->left = node->right;
-    else
-    {
-        prevNode = node;
-        tree->root = node->right;
-    }
-
-    upo_bst_destroy_node(node, destroy_data);
+    upo_bst_node_t *node = upo_bst_min(tree);
+    if (node != NULL)
+        upo_bst_delete(tree, node, destroy_data);
 }
 
 void upo_bst_delete_max(upo_bst_t tree, int destroy_data)
@@ -351,21 +337,9 @@ void upo_bst_delete_max(upo_bst_t tree, int destroy_data)
     if (tree == NULL || tree->root == NULL)
         return;
 
-    upo_bst_node_t *node = tree->root, *prevNode = NULL;
-    while (node->right != NULL)
-    {
-        prevNode = node;
-        node = node->right;
-    }
-    if (prevNode != NULL)
-        prevNode->right = node->left;
-    else
-    {
-        prevNode = node;
-        tree->root = node->left;
-    }
-
-    upo_bst_destroy_node(node, destroy_data);
+    upo_bst_node_t *node = upo_bst_max(tree);
+    if (node != NULL)
+        upo_bst_delete(tree, node, destroy_data);
 }
 
 void *upo_bst_floor(const upo_bst_t tree, const void *key)
@@ -435,15 +409,20 @@ void upo_bst_keys_range_impl(const upo_bst_node_t *node, const void *low_key, co
 
     upo_bst_keys_range_impl(node->left, low_key, high_key, cmp, key_list);
 
+    upo_bst_keys_range_impl(node->right, low_key, high_key, cmp, key_list);
+
     if (cmp(node->key, low_key) >= 0 && cmp(node->key, high_key) <= 0)
     {
         upo_bst_key_list_t key_node = malloc(sizeof(upo_bst_key_list_t));
+        if (key_node == NULL)
+        {
+            perror("Unable to create key list node");
+            abort();
+        }
         key_node->key = node->key;
         key_node->next = *key_list;
         *key_list = key_node;
     }
-
-    upo_bst_keys_range_impl(node->right, low_key, high_key, cmp, key_list);
 }
 
 upo_bst_key_list_t upo_bst_keys(const upo_bst_t tree)
@@ -463,12 +442,17 @@ void upo_bst_keys_impl(upo_bst_node_t *node, upo_bst_key_list_t *key_list)
 
     upo_bst_keys_impl(node->left, key_list);
 
+    upo_bst_keys_impl(node->right, key_list);
+
     upo_bst_key_list_t key_node = malloc(sizeof(upo_bst_key_list_t));
+    if (key_node == NULL)
+    {
+        perror("Unable to create key list node");
+        abort();
+    }
     key_node->key = node->key;
     key_node->next = *key_list;
     *key_list = key_node;
-
-    upo_bst_keys_impl(node->right, key_list);
 }
 
 int upo_bst_is_bst(const upo_bst_t tree, const void *min_key, const void *max_key)
@@ -496,6 +480,7 @@ int upo_bst_is_bst_impl(upo_bst_node_t *node, const void *min_key, const void *m
 }
 
 /**** EXERCISE #2 - END of EXTRA OPERATIONS ****/
+
 /**** EXERCISE #8-9-10-11 - MORE EXERCISES ****/
 
 size_t upo_bst_rank(const upo_bst_t tree, const void *key)
@@ -590,6 +575,11 @@ void upo_bst_keys_le_impl(upo_bst_node_t *node, const void *key, upo_bst_compara
     if (cmp(node->key, key) <= 0)
     {
         upo_bst_key_list_t key_node = malloc(sizeof(upo_bst_key_list_t));
+        if (key_node == NULL)
+        {
+            perror("Unable to create key list node");
+            abort();
+        }
         key_node->key = node->key;
         key_node->next = *key_list;
         *key_list = key_node;

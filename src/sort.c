@@ -46,13 +46,11 @@ void upo_bubble_sort(void *base, size_t n, size_t size, upo_sort_comparator_t cm
     {
         k = 0;
         for (size_t i = 0; i < n - 1; i++)
-        {
             if (cmp(array + i * size, array + (i + 1) * size) > 0)
             {
                 upo_swap(array + i * size, array + (i + 1) * size, size);
                 k = 1;
             }
-        }
     };
 }
 
