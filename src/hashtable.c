@@ -222,13 +222,13 @@ void upo_ht_sepchain_delete(upo_ht_sepchain_t ht, const void *key, int destroy_d
             p->next = n->next;
     }
 
-    ht->size--;
     if (destroy_data)
     {
         free(n->key);
         free(n->value);
     }
     free(n);
+    ht->size--;
 }
 
 size_t upo_ht_sepchain_size(const upo_ht_sepchain_t ht)
