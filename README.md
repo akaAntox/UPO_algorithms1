@@ -5,7 +5,7 @@ Collection of algorithms and abstract data types developed at the [Computer Scie
 
 ## upo_algorithms1
 * [General info](#general-info)
-* [Technologies](#technologies)
+* [Exercises](#exercises)
 * [Compile and run](#compile-and-run)
 
 ## General info
