@@ -34,9 +34,10 @@ TODO: FIX cptrs ex1 ex2 ex3 (make a single makefile)
 $ make clean more_exercises
 $ cd ./more_exercises
 $ ./advanced_pointers/advanced_pointers
-$ ./cptrs_ex01_ex02_ex03/cptrs-ex01-any_copy/any_copy
-$ ./cptrs_ex01_ex02_ex03/cptrs-ex02-binary_search/binary_search
-$ ./cptrs_ex01_ex02_ex03/cptrs-ex03-dump_array/dump_array
+$ cd ./cptrs_ex01_ex02_ex03
+$ ./cptrs-ex01-any_copy/any_copy
+$ ./cptrs-ex02-binary_search/binary_search
+$ ./cptrs-ex03-dump_array/dump_array
 ```
 
 * Stack exercises
