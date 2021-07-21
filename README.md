@@ -1,14 +1,9 @@
-UPO alglib
-==========
-
-Collection of algorithms and abstract data types developed at the [Computer Science Institute](http://www.di.unipmn.it) of the [University of Piemonte Orientale](http://www.uniupo.it) by [Marco Guazzone](https://github.com/sguazt) for the *Algorithm 1 - Lab* course.
-
-## upo_algorithms1
-* [General info](#general-info)
+## UPO_algorithms1
+* [Info](#info)
 * [Exercises](#exercises)
 * [Compile and run](#compile-and-run)
 
-## General info
+## Info
 Collection of algorithms and abstract data types developed at the [Computer Science Institute](http://www.di.unipmn.it) of the [University of Piemonte Orientale](http://www.uniupo.it) by [Marco Guazzone](https://github.com/sguazt) for the *Algorithm 1 - Lab* course.
 
 It includes algorithms in C regarding stack, data sorting, binary search trees, and hash tables.
