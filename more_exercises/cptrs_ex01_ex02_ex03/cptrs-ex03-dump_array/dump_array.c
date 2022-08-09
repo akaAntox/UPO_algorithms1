@@ -42,7 +42,7 @@ void dump_string(const void *p, FILE *fp)
     assert(p != NULL);
     assert(fp != NULL);
 
-    const char *element = p;
+    const char *element = *(char**)p;
 
     printf("(strlen: %ld)", strlen(element));
     fprintf(fp, "%s", element);
